@@ -2,6 +2,8 @@
 
 This snippet is designed to compare the behavior of [mutation observers](https://developer.mozilla.org/en-US/docs/DOM/MutationObserver), using the [mutation summary library](http://code.google.com/p/mutation-summary/), to the variety of key events needed to handle contenteditable changes without mutation events.
 
+The key event code is taken from the most popular [answer](http://stackoverflow.com/a/6263537/194957) to a contenteditable change events [question](http://stackoverflow.com/questions/1391278/contenteditable-change-events) on Stack Overflow.
+
 Ideas to test out:
 
 1. Quickly run your hand across the numeric keys at the top of your keyboard
