@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="css/bootstrap.min.css" rel="stylesheet"></link>
+		<script src="js/jquery-1.7.2.min.js"></script>
+		<script src="js/mutation_summary.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row-fluid">
+				<h1>Mutation observers vs key events</h1>
+				<p>This snippet is designed to compare the behavior of <a href="https://developer.mozilla.org/en-US/docs/DOM/MutationObserver" target="_blank">mutation observers</a>, using the <a href="http://code.google.com/p/mutation-summary/" target="_blank">mutation summary library</a>, to the variety of key events needed to handle contenteditable changes without mutation events.</p>
+				<p>Ideas to test out:</p>
+				<ol>
+					<li>
+						<strong>Quickly run your hand across the numeric keys at the top of your keyboard</strong>
+						<p>Which approach reports each key individually (should appear as a clean waterfall)?</p>
+					</li>
+					<li>
+						<strong>Any differences when copy/pasting?  What about keyboard shortcuts vs context menu?  How about the browser paste button?</strong>
+						<p>The browser paste button is well-handled by one approach and not at all by the other.  Also, try copying some text, refreshing to start over, and then pasting using the context menu.</p>
+					</li>
+					<li>
+						<strong>What about cutting/pasting?</strong>
+						<p>Try with keyboard shortcuts, the context menu, and the browser buttons.</p>
+					</li>
+					<li><strong>Try highlighting some text in this paragraph and dragging/dropping onto the content editable.</strong></li>
+				</ol>
+			</div>
+			<div class="row-fluid editor">
+				<div class="well" id="editor_input" contenteditable="true">Type here.</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span6">
+					<h2>Observer</h2>
+					<ol id="observer_results"></ol>
+				</div>
+				<div class="span6">
+					<h2>Traditional key events</h2>
+					<ol id="key_results"></ol>
+				</div>
+			</div>			
+		</div>
+		<script>
+			$('[contenteditable]').live('focus', function() {
+				var $this = $(this);
+				$this.data('before', $this.html());
+				return $this;
+			}).live('blur keyup paste', function() {
+				var $this = $(this);
+				if ($this.data('before') !== $this.html()) {
+				$this.data('before', $this.html());
+				$this.trigger('change');
+			}
+				return $this;
+			});
+			$('#editor_input').bind('change', function() {
+				noteResults('#key_results', $(this).html());
+			});
+			var observer = new MutationSummary({
+				rootNode: $("#editor_input")[0],
+				queries: [{ characterData: true }],
+				callback: function(summaries) {
+					noteResults('#observer_results', $(summaries[0].target).html())
+				}
+			});	
+			function noteResults(selector, value) {
+				$(selector).append("<li>" + value + "</li>");
+			}
+		</script>
+	</body>
+</html>
